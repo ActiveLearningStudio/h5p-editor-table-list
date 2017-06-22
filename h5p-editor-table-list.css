@@ -3,6 +3,7 @@
   table-layout: fixed;
   border-spacing: 0 5px;
   empty-cells: show;
+  overflow: hidden;
 }
 .h5p-editor-table-list thead th,
 .h5p-editor-table-list tbody td {
@@ -27,6 +28,7 @@
   background: #f5f5f5;
   border-top: 1px solid #d0d0d1;
   border-bottom: 1px solid #d0d0d1;
+  vertical-align: top;
 }
 .h5p-editor-table-list tbody td:first-child {
   border-left: 1px solid #d0d0d1;
@@ -58,5 +60,10 @@
 }
 .h5p-editor-table-list td.h5peditor-remove-button .h5peditor-button[aria-label]:before {
   top: 85%;
-  right: -30%;
+  right: 10%;
+}
+.h5p-editor-table-list tbody .h5p-errors > p {
+  white-space: nowrap;
+  margin: 6px 0 0 6px;
+  font-size: 14px;
 }

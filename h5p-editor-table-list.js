@@ -1,13 +1,18 @@
-H5PEditor.TableList = (function ($) {
+H5PEditor.TableList = (function ($, EventDispatcher) {
 
   /**
    * Renders UI for the table list.
    *
    * @class
+   * @extends H5P.EventDispatcher
    * @param {List} list
+   * @param {string} [extraClass]
    */
-  function TableList(list) {
+  function TableList(list, extraClass) {
     var self = this;
+
+    // Initialize inheritance
+    EventDispatcher.call(self);
 
     // Grab entity and make first letter upper case
     var entity = list.getEntity();
@@ -15,7 +20,7 @@ H5PEditor.TableList = (function ($) {
 
     // Create DOM elements
     var $wrapper = $('<table/>', {
-      'class': 'h5p-editor-table-list'
+      'class': 'h5p-editor-table-list' + (extraClass ? ' ' + extraClass : '')
     });
     var $thead = $('<thead/>', {
       appendTo: $wrapper
@@ -27,7 +32,6 @@ H5PEditor.TableList = (function ($) {
     var $tfoot = $('<tfoot/>', {
       appendTo: $wrapper
     });
-    var $footRow;
 
     /**
      * Adds UI items to the widget.
@@ -42,8 +46,9 @@ H5PEditor.TableList = (function ($) {
       }
 
       if (!$headRow) {
-        addHeaders(item.field.fields);
-        addFooter(item.field.fields.length);
+        var group = list.getField();
+        addHeaders(group.fields);
+        addFooter(group.fields.length);
       }
 
       // Set default params in case item has no params
@@ -63,7 +68,7 @@ H5PEditor.TableList = (function ($) {
         appendTo: $thead
       });
       for (var i = 0; i < fields.length; i++) {
-        $('<th/>', {
+        var $th = $('<th/>', {
           'class': 'h5peditor-type-' + fields[i].type,
           html: (fields[i].label ? fields[i].label : ''),
           appendTo: $headRow
@@ -74,13 +79,15 @@ H5PEditor.TableList = (function ($) {
         'class': 'h5peditor-remove-header',
         appendTo: $headRow
       });
+
+      self.trigger('headersadd', $headRow[0]);
     };
 
     /**
      * @private
      */
      var addFooter = function (length) {
-      $footRow = $('<tr/>', {
+      var $footRow = $('<tr/>', {
         appendTo: $tfoot
       });
       $footCell = $('<td/>', {
@@ -103,15 +110,15 @@ H5PEditor.TableList = (function ($) {
       var $tableRow = $('<tr/>', {
         appendTo: $tbody
       });
-      var rowIndex = $tableRow.index();
 
-      for (var i = 0; i < item.field.fields.length; i++) {
-        var field = item.field.fields[i];
+      var fields = item.getFields();
+      for (var i = 0; i < fields.length; i++) {
+        fields[i].label = 0;
         var $cell = $('<td/>', {
           appendTo: $tableRow
         });
 
-        var fieldInstance = processSemanticsField(item, field);
+        var fieldInstance = processSemanticsField(item, fields[i]);
         fieldInstance.appendTo($cell);
 
         item.children.push(fieldInstance);
@@ -133,8 +140,15 @@ H5PEditor.TableList = (function ($) {
       }).appendTo(document.body);
       confirmRemovalDialog.on('confirmed', function () {
         // Remove him!
-        list.removeItem(rowIndex);
+        self.trigger('rowremove', $tableRow[0]);
+        list.removeItem($tableRow.index());
         $tableRow.remove(); // Bye, bye
+      });
+
+      // Allow overriding
+      self.trigger('rowadd', {
+        element: $tableRow[0],
+        fields: fields
       });
     };
 
@@ -186,5 +200,9 @@ H5PEditor.TableList = (function ($) {
     };
   }
 
+  // Extend the prototype
+  TableList.prototype = Object.create(EventDispatcher.prototype);
+  TableList.prototype.constructor = TableList;
+
   return TableList;
-})(H5P.jQuery);
+})(H5P.jQuery, H5P.EventDispatcher);
