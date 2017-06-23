@@ -18,7 +18,7 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
     var entity = list.getEntity();
     entity = entity.substr(0,1).toLocaleUpperCase() + entity.substr(1);
 
-    // Create DOM elements
+    // Create DOM structure elements for the table
     var $wrapper = $('<table/>', {
       'class': 'h5p-editor-table-list' + (extraClass ? ' ' + extraClass : '')
     });
@@ -61,7 +61,10 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
     };
 
     /**
+     * Add table headers
+     *
      * @private
+     * @param {Array} fields
      */
     var addHeaders = function (fields) {
       $headRow = $('<tr/>', {
@@ -80,11 +83,17 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
         appendTo: $headRow
       });
 
-      self.trigger('headersadd', $headRow[0]);
+      self.trigger('headersadd', {
+        element: $headRow[0],
+        fields: fields
+      });
     };
 
     /**
+     * Add table footer
+     *
      * @private
+     * @param {number} length
      */
      var addFooter = function (length) {
       var $footRow = $('<tr/>', {
@@ -100,7 +109,10 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
     };
 
     /**
+     * Add a new table row with data using the given group as source
+     *
      * @private
+     * @param {H5PEditor.Group} item
      */
     var addRow = function (item) {
       // Keep track of field instances
@@ -111,6 +123,7 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
         appendTo: $tbody
       });
 
+      // Process semantics to create row fields
       var fields = item.getFields();
       for (var i = 0; i < fields.length; i++) {
         fields[i].label = 0;
@@ -140,20 +153,28 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
       }).appendTo(document.body);
       confirmRemovalDialog.on('confirmed', function () {
         // Remove him!
-        self.trigger('rowremove', $tableRow[0]);
+        self.trigger('rowremove', {
+          element: $tableRow[0],
+          fields: fields
+        });
         list.removeItem($tableRow.index());
         $tableRow.remove(); // Bye, bye
       });
 
-      // Allow overriding
+      // Allow overriding / customization
       self.trigger('rowadd', {
         element: $tableRow[0],
-        fields: fields
+        fields: fields,
+        instances: item.children
       });
     };
 
     /**
+     * Convert semantics into widgets.
+     *
      * @private
+     * @param {H5PEditor.Group} parent
+     * @param {Object} field
      */
     var processSemanticsField = function (parent, field) {
       // Check required field properties

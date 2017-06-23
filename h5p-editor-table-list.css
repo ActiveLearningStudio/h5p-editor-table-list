@@ -3,7 +3,6 @@
   table-layout: fixed;
   border-spacing: 0 5px;
   empty-cells: show;
-  overflow: hidden;
 }
 .h5p-editor-table-list thead th,
 .h5p-editor-table-list tbody td {
