@@ -57,6 +57,9 @@
   display: inline-block;
   line-height: 38px;
 }
+.h5p-editor-table-list td.h5peditor-remove-button .h5peditor-button:hover:after {
+  opacity: 1;
+}
 .h5p-editor-table-list td.h5peditor-remove-button .h5peditor-button[aria-label]:before {
   top: 85%;
   right: 10%;
