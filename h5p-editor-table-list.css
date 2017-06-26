@@ -64,6 +64,12 @@
   top: 85%;
   right: 10%;
 }
+.h5p-editor-table-list td.h5peditor-remove-button .h5peditor-button[aria-disabled="true"] {
+  cursor: default;
+}
+.h5p-editor-table-list td.h5peditor-remove-button .h5peditor-button[aria-disabled="true"]:after {
+  opacity: 0.3;
+}
 .h5p-editor-table-list tbody .h5p-errors > p {
   white-space: nowrap;
   margin: 6px 0 0 6px;

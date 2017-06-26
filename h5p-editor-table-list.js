@@ -144,7 +144,9 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
       });
 
       H5PEditor.createButton('remove', H5PEditor.t('core', 'removeItem'), function () {
-        confirmRemovalDialog.show($(this).offset().top);
+        if (this.getAttribute('aria-disabled') !== 'true') {
+          confirmRemovalDialog.show($(this).offset().top);
+        }
       }).appendTo($removeButtonCell);
 
       // Create confirmation dialog for removing list item
