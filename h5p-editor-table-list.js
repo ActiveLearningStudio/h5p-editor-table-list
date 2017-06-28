@@ -40,7 +40,6 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
      * @param {Object} item
      */
     self.addItem = function (item) {
-
       if (!(item instanceof H5PEditor.Group)) {
         return; // Only support multiple fields
       }
@@ -106,6 +105,12 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
       H5PEditor.createButton(list.getImportance(), H5PEditor.t('core', 'addEntity', {':entity': entity}), function () {
         list.addItem();
       }, true).appendTo($footCell);
+
+      self.trigger('footeradd', {
+        footerCell: $footCell[0],
+        fields: list.getField().fields,
+        tbody: $tbody[0]
+      });
     };
 
     /**
