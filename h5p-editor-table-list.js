@@ -11,6 +11,8 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
   function TableList(list, extraClass) {
     var self = this;
 
+    self.rows = [];
+
     // Initialize inheritance
     EventDispatcher.call(self);
 
@@ -94,7 +96,7 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
      * @private
      * @param {number} length
      */
-     var addFooter = function (length) {
+    var addFooter = function (length) {
       var $footRow = $('<tr/>', {
         appendTo: $tfoot
       });
@@ -160,13 +162,18 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
       }).appendTo(document.body);
       confirmRemovalDialog.on('confirmed', function () {
         // Remove him!
-        self.trigger('rowremove', {
+        self.trigger('beforerowremove', {
           element: $tableRow[0],
           fields: fields
         });
-        list.removeItem($tableRow.index());
+        var index = $tableRow.index();
+        list.removeItem(index);
+        self.rows.splice(index, 1);
         $tableRow.remove(); // Bye, bye
+        self.trigger('afterrowremove');
       });
+
+      self.rows.push($tableRow[0]);
 
       // Allow overriding / customization
       self.trigger('rowadd', {
