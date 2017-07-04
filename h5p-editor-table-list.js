@@ -61,6 +61,10 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
       addRow(item);
     };
 
+    self.getBody = function () {
+      return $tbody[0];
+    };
+
     /**
      * Add table headers
      *
