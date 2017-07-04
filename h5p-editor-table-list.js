@@ -200,6 +200,10 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
         throw ns.t('core', 'missingProperty', {':index': i, ':property': 'name/type'});
       }
 
+      self.trigger('beforewidgetcreate', {
+        field: field
+      });
+
       // Set default value
       if (parent.params[field.name] === undefined && field['default'] !== undefined) {
         parent.params[field.name] = field['default'];
