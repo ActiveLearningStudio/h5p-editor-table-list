@@ -11,8 +11,6 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
   function TableList(list, extraClass) {
     var self = this;
 
-    self.rows = [];
-
     // Initialize inheritance
     EventDispatcher.call(self);
 
@@ -48,8 +46,15 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
 
       if (!$headRow) {
         var group = list.getField();
-        addHeaders(group.fields);
+        addHeader(group.fields);
         addFooter(group.fields.length);
+
+        self.trigger('tableprepared', {
+          thead: $thead[0],
+          tfoot: $tfoot[0],
+          tbody: $tbody[0],
+          fields: group.fields
+        });
       }
 
       // Set default params in case item has no params
@@ -61,17 +66,13 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
       addRow(item);
     };
 
-    self.getBody = function () {
-      return $tbody[0];
-    };
-
     /**
      * Add table headers
      *
      * @private
      * @param {Array} fields
      */
-    var addHeaders = function (fields) {
+    var addHeader = function (fields) {
       $headRow = $('<tr/>', {
         appendTo: $thead
       });
@@ -88,7 +89,7 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
         appendTo: $headRow
       });
 
-      self.trigger('headersadd', {
+      self.trigger('headeradd', {
         element: $headRow[0],
         fields: fields
       });
@@ -104,7 +105,7 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
       var $footRow = $('<tr/>', {
         appendTo: $tfoot
       });
-      $footCell = $('<td/>', {
+      var $footCell = $('<td/>', {
         colspan: length,
         appendTo: $footRow
       });
@@ -149,7 +150,7 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
       }
 
       // Add remove button
-      $removeButtonCell = $('<td/>', {
+      var $removeButtonCell = $('<td/>', {
         'class': 'h5peditor-remove-button',
         appendTo: $tableRow
       });
@@ -166,18 +167,15 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
       }).appendTo(document.body);
       confirmRemovalDialog.on('confirmed', function () {
         // Remove him!
-        self.trigger('beforerowremove', {
+        self.trigger('rowremove', {
           element: $tableRow[0],
           fields: fields
         });
         var index = $tableRow.index();
         list.removeItem(index);
-        self.rows.splice(index, 1);
         $tableRow.remove(); // Bye, bye
-        self.trigger('afterrowremove');
+        self.trigger('rowremoved');
       });
-
-      self.rows.push($tableRow[0]);
 
       // Allow overriding / customization
       self.trigger('rowadd', {
@@ -199,10 +197,6 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
       if (field.name === undefined || field.type === undefined) {
         throw ns.t('core', 'missingProperty', {':index': i, ':property': 'name/type'});
       }
-
-      self.trigger('beforewidgetcreate', {
-        field: field
-      });
 
       // Set default value
       if (parent.params[field.name] === undefined && field['default'] !== undefined) {
