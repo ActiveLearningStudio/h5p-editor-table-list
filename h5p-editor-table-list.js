@@ -69,7 +69,7 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
     /**
      * Add table headers
      *
-     * @private
+     * @private
      * @param {Array} fields
      */
     var addHeader = function (fields) {
@@ -77,7 +77,7 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
         appendTo: $thead
       });
       for (var i = 0; i < fields.length; i++) {
-        var $th = $('<th/>', {
+        $('<th/>', {
           'class': 'h5peditor-type-' + fields[i].type,
           html: (fields[i].label ? fields[i].label : ''),
           appendTo: $headRow
@@ -98,7 +98,7 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
     /**
      * Add table footer
      *
-     * @private
+     * @private
      * @param {number} length
      */
     var addFooter = function (length) {
@@ -123,7 +123,7 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
     /**
      * Add a new table row with data using the given group as source
      *
-     * @private
+     * @private
      * @param {H5PEditor.Group} item
      */
     var addRow = function (item) {
@@ -139,14 +139,16 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
       var fields = item.getFields();
       for (var i = 0; i < fields.length; i++) {
         fields[i].label = 0;
-        var $cell = $('<td/>', {
-          appendTo: $tableRow
-        });
 
         var fieldInstance = processSemanticsField(item, fields[i]);
-        fieldInstance.appendTo($cell);
 
-        item.children.push(fieldInstance);
+        if (fieldInstance) {
+          var $cell = $('<td/>', {
+            appendTo: $tableRow
+          });
+          fieldInstance.appendTo($cell);
+          item.children.push(fieldInstance);
+        }
       }
 
       // Add remove button
@@ -188,14 +190,14 @@ H5PEditor.TableList = (function ($, EventDispatcher) {
     /**
      * Convert semantics into widgets.
      *
-     * @private
+     * @private
      * @param {H5PEditor.Group} parent
      * @param {Object} field
      */
     var processSemanticsField = function (parent, field) {
       // Check required field properties
       if (field.name === undefined || field.type === undefined) {
-        throw ns.t('core', 'missingProperty', {':index': i, ':property': 'name/type'});
+        return;
       }
 
       // Set default value
