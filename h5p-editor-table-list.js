@@ -1,3 +1,4 @@
+/* global ns */
 H5PEditor.TableList = (function ($, EventDispatcher) {
 
   /**
